@@ -1,0 +1,146 @@
+Submit 16s rRNA data to Genebank with Mothur Protocol
+
+1. The first command you want to run is get.mimarkspackage. The get.mimarkspackage command helps you fill provide all the necessary experimental data about your samples. Here is a link to information about the different mimarks packages, http://www.mothur.org/wiki/MIMarks_Data_Packages.
+# I used mothur 1.38.0
+# I did the command: mothur > get.mimarkspackage(file=sra.file)
+# Format of the file I used (sra.file): 
+LA LA_S1_L001_R1_001.fastq LA_S1_L001_R2_001.fastq
+# You will get a file named sra.tsv
+
+# You will need to fill in the form. Here is mine: 
+
+############################################################
+
+#This is a tab-delimited file. Additional Documentation can be found at http://www.mothur.org/wiki/MIMarks_Data_Packages.
+
+#Please fill all the required fields indicated with '*' 
+
+#Unknown or inapplicable fields can be assigned 'missing' value. 
+
+#You may add extra custom fields to this template. Make sure all the fields are separated by tabs.
+
+#You may remove any fields not required (marked with '*'). Make sure all the fields are separated by tabs.
+
+#You can edit this template using Microsoft Excel or any other editor. But while saving the file please make sure to save them as 'TAB-DELIMITED' TEXT FILE.
+
+#MIMARKS.survey.miscellaneous.4.0 
+
+#{sample name} {description of sample} {sample title} {description of library_construction_protocol} {http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?mode=Undef&id=408169&lvl=3&keep=1&srchmode=1&unlock} "{Date of sampling, in ""DD-Mmm-YYYY"", ""Mmm-YYYY""
+ or ""YYYY"" format (eg., 30-Oct-1990, Oct-1990 or 1990) or ISO 8601 standard ""YYYY-mm-dd"", ""YYYY-mm"" or ""YYYY-mm-ddThh:mm:ss"" (eg., 1990-10-30, 1990-10 or 1990-10-30T14:41:36)}" "{descriptor of the broad ecological context of a sample. Examples include:
+ desert, taiga, deciduous woodland, or coral reef. EnvO (v 2013-06-14) terms can be found via the link: www.environmentontology.org/Browse-EnvO}" "{descriptor of the local environment. Examples include: harbor, cliff, or lake. EnvO (v 2013-06-14) terms can
+ be found via the link: www.environmentontology.org/Browse-EnvO}" "{material that was displaced by the sample, or material in which a sample was embedded, prior to the sampling event. Examples include: air, soil, or water. EnvO (v 2013-06-14) terms can be found
+ via the link: www.environmentontology.org/Browse-EnvO}" "{Geographical origin of the sample; use the appropriate name from this list http://www.insdc.org/documents/country-qualifier-vocabulary. Use a colon to separate the country or ocean from more detailed
+ information about the location, eg ""Canada: Vancouver"" or ""Germany: halfway down Zugspitze, Alps""}" "{The geographical coordinates of the location where the sample was collected. Specify as degrees latitude and longitude in format ""d[d.dddd] N|S d[dd.dddd]
+ W|E"", eg, 38.98 N 77.11 W}"
+
+#{text} {text} {text} {text} {controlled vacabulary} {{timestamp}} {{term}} {{term}} {{term}} {{term}:{term}:{text}} {{float} {float}}
+
+*sample_name *description *sample_title *seq_methods *organism *collection_date *env_biome *env_feature *env_material *geo_loc_name *lat_lon
+
+LA LabLarvae LabLarvae Illumina Miseq mosquito metagenome 12-Nov-2013 Biological material Lab1 Water China: Guangzhou 23.19 N 113.33 E
+
+################################################################################
+
+The file above is the mimark file you will use in step 3
+
+***********************************************************************************
+
+2. Create a project file. You can download a template here.
+
+# Format as below(sra.project):
+
+USERNAME xwang95
+
+Last Wang
+
+First Chloe
+
+EMAIL xwang95@hotmail.com
+
+CENTER ?? University
+
+TYPE Institute
+
+ProjectName Bacterial Microbial Assemblages#######
+
+ProjectTitle Bacterial Microbial Assemblages ####
+
+Description Here we examined microbiota assemblage ####
+
+Grant id=R01##, agency=National Institutes of Health
+
+Grant id=R01##, agency=National Institutes of Health
+
+*********************************************************************
+
+3. Run the make.sra command. This command will parse your sff or fastq file and generate an xml file for submission.
+
+# make.sra(file=sra.file, project=sra.project, mimark=sra.txt)
+
+# 1) You can change sra.tsv to sra.txt, or you can use sra.tsv directly
+
+# 2) The mimark file is the most important part here. Make sure you make it all right.
+
+# 3) For replicate, they must have distinguished features.
+
+********************************************************************************************
+
+4. Email the SRA at NCBI (sra@ncbi.nlm.nih.gov) to let them know you are making a submission using mothur created files and need an aspera key or ftp instructions. They will provide you with instructions from there.
+
+# From here, you may just send the email and wait.
+
+# I waited for around 36 hours for the reply as below:
+
+********************************************************************
+
+Dear Chloe,
+
+
+Attached is the aspera key and instructions for uploading a Mothur submission. First, I would suggest testing your ascp command line by uploading to the test area. A specific example (Linux) in which "file.fastq" is sent would be:
+
+/opt/aspera/bin/ascp ­-i /full_path_to_file/<name of key file> -QT -l100m ­-k1 -d <path_to_file>/file.fastq asp-mothur@upload.ncbi.nlm.nih.gov:submit/Test/username
+
+
+If the upload to the test area succeeds you can proceed to upload to the Production area. The only change to your command line will be to change "Test" to "Production".
+
+/opt/aspera/bin/ascp -­i /full_path_to_file/<name of key file> -QT -l100m ­-k1 -d <path_to_file>/file.fastq asp-mothur@upload.ncbi.nlm.nih.gov:submit/Production/username
+
+
+There are 3 things that need to be uploaded: the data files, the submission.xml file and an empty file called "submit.ready". This empty file is the trigger to let our processing pipeline know that your submission is ready to be submitted, please upload it
+ last. Please do not rename the submission.xml file to a different name. 
+
+
+You can also submit the required files using FTP(create a directory for your submission in submit/Production/your_username):
+
+
+Address: ftp-private.ncbi.nlm.nih.gov 
+
+Username: they will give you a name
+
+Password: a random passcode
+
+
+If you are accessing the FTP area from command line in order to go into the Production area, please run the command:
+
+
+cd submit/Production
+
+
+To create your submission directory run the command (where your_username is the username you login into NIH):
+
+
+mkdir your_username
+
+
+To upload the data you would use the put command.
+
+
+Please do not hesitate to contact me with questions or problems.
+
+***************************************************************************
+
+# I used FTP tool (FileZilla) to transfer the file from my computer to the database.
+
+# If there is nothing wrong, the accession number will appear within 1-2 days. 
+
+# If there's something wrong, they will email you within 1-2 days. 
